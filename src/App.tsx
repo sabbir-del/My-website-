@@ -235,17 +235,35 @@ function Portfolio() {
 
           <section id="research">
             <span className="section-label-editorial">Research Showcase</span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {researches.map((item, idx) => (
-                <div key={idx} className="editorial-card group bg-white">
-                  <div className="text-[0.6rem] font-bold text-sky-accent uppercase tracking-widest mb-3">{item.tag}</div>
-                  <h4 className="text-lg font-bold mb-3 leading-tight">{item.title}</h4>
-                  <p className="text-sm text-[#64748B] leading-relaxed line-clamp-3 mb-6">
-                    {item.abstract}
-                  </p>
-                  <a href={item.link} className="inline-block text-[0.7rem] font-bold text-sky-accent tracking-widest hover:underline">
-                    READ PAPER →
-                  </a>
+                <div key={idx} className="editorial-card group bg-white overflow-hidden flex flex-col">
+                  {item.imageUrl && (
+                    <div className="h-48 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
+                      <img 
+                        src={item.imageUrl} 
+                        alt={item.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  )}
+                  <div className="p-8">
+                    <div className="text-[0.6rem] font-bold text-sky-accent uppercase tracking-widest mb-3">{item.tag}</div>
+                    <h4 className="text-lg font-bold mb-3 leading-tight">{item.title}</h4>
+                    <p className="text-sm text-[#64748B] leading-relaxed line-clamp-3 mb-6">
+                      {item.abstract}
+                    </p>
+                    <a 
+                      href={item.link} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-[0.7rem] font-black text-midnight tracking-widest hover:text-sky-accent transition-colors"
+                    >
+                      READ FULL PAPER 
+                      <span className="group-hover:translate-x-1 transition-transform">→</span>
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>

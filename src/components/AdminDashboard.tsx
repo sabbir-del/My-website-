@@ -74,7 +74,7 @@ export default function AdminDashboard() {
   const [editorTab, setEditorTab] = useState<'info' | 'content'>('info');
 
   const handleEditResearch = (item: any) => {
-    setEditItem(item || { title: '', abstract: '', tag: '', link: '' });
+    setEditItem(item || { title: '', abstract: '', tag: '', link: '', imageUrl: '' });
     setIsEditing('research');
     setEditorTab('info');
   };
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-8">
+                  <div className="space-y-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-midnight/40">
                         {isEditing === 'research' ? 'Category / Tag' : 'Publication Date'}
@@ -336,6 +336,18 @@ export default function AdminDashboard() {
                         placeholder={isEditing === 'research' ? "e.g. Robotics" : "Apr 22, 2026"}
                       />
                     </div>
+                    {isEditing === 'research' && (
+                      <div className="space-y-2 text-blue-600">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-midnight/40">Cover Image URL</label>
+                        <input 
+                          type="text" 
+                          value={editItem.imageUrl} 
+                          onChange={e => setEditItem({...editItem, imageUrl: e.target.value})}
+                          className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white outline-none text-sm font-bold"
+                          placeholder="Link to header image..."
+                        />
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-[0.2em] text-midnight/40">
                         {isEditing === 'research' ? 'Paper Link' : 'Short Excerpt'}

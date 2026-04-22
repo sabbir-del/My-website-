@@ -45,6 +45,7 @@
         "abstract": { "type": "string" },
         "tag": { "type": "string" },
         "link": { "type": "string" },
+        "imageUrl": { "type": "string" },
         "authorId": { "type": "string" }
       },
       "required": ["title", "abstract", "authorId"]
