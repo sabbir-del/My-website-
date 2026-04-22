@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { db } from '../lib/firebase';
+import { db, storage } from '../lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, getDoc, setDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { 
   UserPen, 
@@ -14,7 +15,10 @@ import {
   ExternalLink,
   ChevronRight,
   LogOut,
-  Settings
+  Settings,
+  Upload,
+  Image as ImageIcon,
+  Loader2
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -83,6 +87,26 @@ export default function AdminDashboard() {
     setEditItem(item || { title: '', excerpt: '', content: '', date: new Date().toLocaleDateString() });
     setIsEditing('blog');
     setEditorTab('info');
+  };
+
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploading(true);
+    try {
+      const storageRef = ref(storage, `research/${user.uid}/${Date.now()}_${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(snapshot.ref);
+      setEditItem({ ...editItem, imageUrl: url });
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const saveResearch = async () => {
@@ -344,15 +368,30 @@ export default function AdminDashboard() {
                       />
                     </div>
                     {isEditing === 'research' && (
-                      <div className="space-y-2 text-blue-600">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-midnight/40">Cover Image URL</label>
-                        <input 
-                          type="text" 
-                          value={editItem.imageUrl} 
-                          onChange={e => setEditItem({...editItem, imageUrl: e.target.value})}
-                          className="w-full p-4 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white outline-none text-sm font-bold"
-                          placeholder="Link to header image..."
-                        />
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-midnight/40">Cover Image</label>
+                        <div className="flex items-center gap-4">
+                          <div className="w-24 h-24 rounded-xl bg-gray-50 border border-dashed border-gray-200 overflow-hidden flex items-center justify-center relative">
+                            {editItem.imageUrl ? (
+                              <img src={editItem.imageUrl} className="w-full h-full object-cover" alt="Preview" />
+                            ) : (
+                              <ImageIcon className="w-6 h-6 text-gray-300" />
+                            )}
+                            {uploading && (
+                              <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                                <Loader2 className="w-5 h-5 text-sky-accent animate-spin" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <label className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-border-editorial rounded-lg text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:bg-gray-50 transition-colors">
+                              <Upload className="w-3 h-3" />
+                              {editItem.imageUrl ? 'Change Image' : 'Upload Image'}
+                              <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+                            </label>
+                            <p className="text-[9px] text-[#94A3B8] mt-2 italic">Supports JPG, PNG, WebP (Max 5MB)</p>
+                          </div>
+                        </div>
                       </div>
                     )}
                     <div className="space-y-2">
