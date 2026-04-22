@@ -1,0 +1,67 @@
+{
+  "entities": {
+    "profile": {
+      "title": "User Profile",
+      "description": "General portfolio information including title, bio, and social links.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "bio": { "type": "string" },
+        "tagline": { "type": "string" },
+        "cvUrl": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "email": { "type": "string" },
+        "socials": {
+          "type": "object",
+          "properties": {
+            "linkedin": { "type": "string" },
+            "github": { "type": "string" },
+            "twitter": { "type": "string" }
+          }
+        }
+      },
+      "required": ["name", "title", "email"]
+    },
+    "blog": {
+      "title": "Blog Post",
+      "description": "Article entries for the technical blog section.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["title", "date", "authorId"]
+    },
+    "research": {
+      "title": "Research Work",
+      "description": "Academic research details.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "abstract": { "type": "string" },
+        "tag": { "type": "string" },
+        "link": { "type": "string" },
+        "authorId": { "type": "string" }
+      },
+      "required": ["title", "abstract", "authorId"]
+    }
+  },
+  "firestore": {
+    "/settings/profile": {
+      "schema": "profile",
+      "description": "Global settings for the portfolio."
+    },
+    "/blogs/{blogId}": {
+      "schema": "blog",
+      "description": "Collection of blog posts."
+    },
+    "/research/{researchId}": {
+      "schema": "research",
+      "description": "Collection of research papers."
+    }
+  }
+}

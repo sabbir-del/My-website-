@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Auth Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // CMS Admin
+    // Whitelisting the owner's email for full control.
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == "sabbir@designmingle.xyz" ||
+        request.auth.token.email_verified == true
+      );
+    }
+
+    // Profile Settings
+    match /settings/profile {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Blogs
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Research
+    match /research/{researchId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

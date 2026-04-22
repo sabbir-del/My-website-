@@ -88,18 +88,44 @@ const hobbies = [
   { icon: <Gamepad2 className="w-5 h-5" />, label: "Gaming" }
 ];
 
-export default function App() {
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import LoginPage from './components/LoginPage';
+import AdminDashboard from './components/AdminDashboard';
+import { db } from './lib/firebase';
+import { collection, doc, getDoc, getDocs, orderBy, query, onSnapshot } from 'firebase/firestore';
+
+function Portfolio() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [researches, setResearches] = useState<any[]>(researchData);
+  const [blogs, setBlogs] = useState<any[]>(blogPosts);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Real-time Profile
+    const unsubProfile = onSnapshot(doc(db, 'settings', 'profile'), (doc) => {
+      if (doc.exists()) setProfile(doc.data());
+    });
+
+    // Real-time Research
+    const unsubResearch = onSnapshot(collection(db, 'research'), (snap) => {
+      if (!snap.empty) setResearches(snap.docs.map(d => ({ ...d.data(), id: d.id })));
+    });
+
+    // Real-time Blogs
+    const unsubBlogs = onSnapshot(query(collection(db, 'blogs'), orderBy('date', 'desc')), (snap) => {
+      if (!snap.empty) setBlogs(snap.docs.map(d => ({ ...d.data(), id: d.id })));
+    });
+
+    return () => {
+      unsubProfile();
+      unsubResearch();
+      unsubBlogs();
+    };
   }, []);
 
   const handleDownloadCV = () => {
-    window.open('https://example.com/cv.pdf', '_blank');
+    window.open(profile?.cvUrl || 'https://example.com/cv.pdf', '_blank');
   };
 
   return (
@@ -107,7 +133,7 @@ export default function App() {
       {/* Editorial Navbar */}
       <nav className="h-20 border-b border-border-editorial flex items-center justify-between px-8 md:px-12 bg-white sticky top-0 z-50">
         <div className="text-xl font-extrabold tracking-tighter uppercase">
-          Sabbir <span className="text-sky-accent">Hossain</span>
+          {profile?.name?.split(' ')[0] || 'Sabbir'} <span className="text-sky-accent">{profile?.name?.split(' ')[1] || 'Hossain'}</span>
         </div>
         
         <div className="hidden md:flex items-center gap-10">
@@ -153,7 +179,6 @@ export default function App() {
       </AnimatePresence>
 
       <main className="flex-1 flex flex-col md:flex-row">
-        {/* Sidebar - Fix to left on desktop */}
         <aside className="md:w-[450px] border-b md:border-b-0 md:border-r border-border-editorial bg-sky-light p-8 md:p-12 flex flex-col justify-between md:min-h-[calc(100vh-80px)]">
           <section id="home" className="mb-16">
             <motion.h1 
@@ -161,10 +186,10 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               className="text-5xl md:text-7xl font-extrabold leading-[0.95] tracking-tighter mb-8 text-midnight"
             >
-              Electrical <br /> Engineer<span className="text-sky-accent">.</span>
+              {profile?.title?.split(' ')[0] || 'Electrical'} <br /> {profile?.title?.split(' ').slice(1).join(' ') || 'Engineer'}<span className="text-sky-accent">.</span>
             </motion.h1>
             <p className="text-lg text-[#475569] leading-relaxed mb-10 max-w-sm">
-              EEE student focused on renewable grid optimization and intelligent automation for sustainable global energy transitions.
+              {profile?.bio || 'EEE student focused on renewable grid optimization and intelligent automation for sustainable global energy transitions.'}
             </p>
             <button 
               onClick={handleDownloadCV}
@@ -175,7 +200,6 @@ export default function App() {
             </button>
           </section>
 
-          {/* Hobbies in Sidebar as per Editorial Aesthetic */}
           <section id="hobbies" className="mt-auto">
             <span className="text-[0.7rem] uppercase tracking-[0.2em] font-bold text-sky-accent mb-6 block">Interests</span>
             <div className="grid grid-cols-2 gap-4">
@@ -189,14 +213,12 @@ export default function App() {
           </section>
         </aside>
 
-        {/* Content Pane */}
         <div className="flex-1 p-8 md:p-16 flex flex-col gap-12 overflow-y-auto">
-          {/* About Me Section */}
           <section id="about">
             <span className="section-label-editorial">About Me</span>
             <div className="prose prose-slate max-w-none">
               <p className="text-xl font-medium text-[#475569] leading-relaxed mb-8">
-                Currently pursuing a B.Sc. in Electrical & Electronic Engineering, I bridge the gap between pure hardware design and smart software integration.
+                {profile?.tagline || 'Currently pursuing a B.Sc. in Electrical & Electronic Engineering, I bridge the gap between pure hardware design and smart software integration.'}
               </p>
             </div>
             
@@ -211,11 +233,10 @@ export default function App() {
             </div>
           </section>
 
-          {/* Research Section */}
           <section id="research">
             <span className="section-label-editorial">Research Showcase</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {researchData.map((item, idx) => (
+              {researches.map((item, idx) => (
                 <div key={idx} className="editorial-card group bg-white">
                   <div className="text-[0.6rem] font-bold text-sky-accent uppercase tracking-widest mb-3">{item.tag}</div>
                   <h4 className="text-lg font-bold mb-3 leading-tight">{item.title}</h4>
@@ -230,11 +251,10 @@ export default function App() {
             </div>
           </section>
 
-          {/* Writing/Blog Section */}
           <section id="blog">
             <span className="section-label-editorial">Latest Articles</span>
             <div className="flex flex-col bg-white">
-              {blogPosts.map((post, idx) => (
+              {blogs.map((post, idx) => (
                 <div key={idx} className="blog-item-editorial group cursor-pointer hover:bg-sky-light/30 px-2 transition-colors">
                   <h4 className="font-bold text-lg group-hover:text-midnight flex-1">
                     {post.title}
@@ -245,20 +265,46 @@ export default function App() {
             </div>
           </section>
 
-          {/* Editorial Footer */}
           <footer id="contact" className="mt-auto pt-10 border-t border-border-editorial flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex gap-8 items-center">
-              <a href="#" className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">LinkedIn</a>
-              <a href="#" className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">GitHub</a>
-              <a href="#" className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">Twitter</a>
+              <a href={profile?.linkedin || "#"} className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">LinkedIn</a>
+              <a href={profile?.github || "#"} className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">GitHub</a>
+              <a href={profile?.twitter || "#"} className="text-[0.75rem] font-bold uppercase tracking-widest hover:text-sky-accent transition-colors">Twitter</a>
             </div>
             <div className="text-[0.7rem] font-bold text-[#94A3B8] uppercase tracking-[0.25em]">
-              sabbir.hossain@edu.com
+              {profile?.email || 'sabbir.hossain@edu.com'}
             </div>
           </footer>
         </div>
       </main>
     </div>
+  );
+}
+
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Checking auth...</div>;
+  return user ? <>{children}</> : <Navigate to="/admin/login" />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Portfolio />} />
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route 
+            path="/admin" 
+            element={
+              <PrivateRoute>
+                <AdminDashboard />
+              </PrivateRoute>
+            } 
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
