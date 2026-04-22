@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Inter", sans-serif;
+
+  --color-midnight: #0F172A;
+  --color-sky-light: #F0F9FF;
+  --color-sky-accent: #38BDF8;
+  --color-border-editorial: #E2E8F0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white text-midnight font-sans antialiased;
+  }
+}
+
+/* Editorial Specific Utility Classes */
+.editorial-border {
+  @apply border border-border-editorial;
+}
+
+.editorial-card {
+  @apply border border-border-editorial p-6 rounded-lg transition-colors hover:border-sky-accent/50;
+}
+
+.editorial-sidebar {
+  @apply border-r border-border-editorial bg-sky-light;
+}
+
+.section-label-editorial {
+  @apply text-[0.7rem] uppercase tracking-[0.2em] font-bold text-[#94A3B8] border-l-4 border-sky-accent pl-2 mb-6 block;
+}
+
+.blog-item-editorial {
+  @apply flex justify-between items-baseline py-4 border-b border-dashed border-border-editorial;
+}
+
+.btn-editorial {
+  @apply bg-midnight text-white px-6 py-3 rounded text-[0.8rem] font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-midnight/90 transition-all;
+}
