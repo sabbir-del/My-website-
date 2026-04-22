@@ -235,36 +235,53 @@ function Portfolio() {
 
           <section id="research">
             <span className="section-label-editorial">Research Showcase</span>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
               {researches.map((item, idx) => (
-                <div key={idx} className="editorial-card group bg-white overflow-hidden flex flex-col">
-                  {item.imageUrl && (
-                    <div className="h-48 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700">
+                <article key={idx} className="editorial-card group flex flex-col bg-white">
+                  <div className="editorial-image-container">
+                    {item.imageUrl ? (
                       <img 
                         src={item.imageUrl} 
                         alt={item.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000"
                         referrerPolicy="no-referrer"
                       />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-sky-light relative overflow-hidden">
+                        {/* Blueprint decorative grid */}
+                        <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'radial-gradient(#0F172A 1px, transparent 1px)', backgroundSize: '16px 16px'}}></div>
+                        <div className="text-[0.6rem] font-black text-midnight/20 uppercase tracking-[0.4em] transform -rotate-12">
+                          Engineering <br /> Blueprint
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-midnight text-white text-[0.6rem] font-bold px-3 py-1 uppercase tracking-widest shadow-xl">
+                        {item.tag || 'Project'}
+                      </span>
                     </div>
-                  )}
-                  <div className="p-8">
-                    <div className="text-[0.6rem] font-bold text-sky-accent uppercase tracking-widest mb-3">{item.tag}</div>
-                    <h4 className="text-lg font-bold mb-3 leading-tight">{item.title}</h4>
-                    <p className="text-sm text-[#64748B] leading-relaxed line-clamp-3 mb-6">
+                  </div>
+                  
+                  <div className="editorial-card-inner">
+                    <h4 className="text-xl font-bold mb-4 leading-tight text-midnight group-hover:text-sky-accent transition-colors duration-300">
+                      {item.title}
+                    </h4>
+                    <p className="text-sm text-slate-500 leading-relaxed mb-8 line-clamp-4 flex-1">
                       {item.abstract}
                     </p>
-                    <a 
-                      href={item.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[0.7rem] font-black text-midnight tracking-widest hover:text-sky-accent transition-colors"
-                    >
-                      READ FULL PAPER 
-                      <span className="group-hover:translate-x-1 transition-transform">→</span>
-                    </a>
+                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-border-editorial">
+                      <a 
+                        href={item.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 text-[0.7rem] font-black text-midnight tracking-widest group/link"
+                      >
+                        <span className="border-b-2 border-transparent group-hover/link:border-sky-accent transition-all">READ FULL PUBLICATION</span>
+                        <span className="group-hover/link:translate-x-2 transition-transform duration-300">→</span>
+                      </a>
+                    </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           </section>

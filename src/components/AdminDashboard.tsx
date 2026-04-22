@@ -252,10 +252,17 @@ export default function AdminDashboard() {
              </button>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                {researches.map(res => (
-                 <div key={res.id} className="bg-white p-6 rounded-2xl border border-gray-100 relative group hover:border-sky-accent transition-all cursor-pointer" onClick={() => handleEditResearch(res)}>
-                    <div className="text-[9px] font-black text-sky-accent uppercase tracking-widest mb-2">{res.tag || 'Project'}</div>
-                    <h3 className="font-bold text-lg leading-tight mb-4">{res.title}</h3>
-                    <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed mb-6">{res.abstract}</p>
+                 <div key={res.id} className="bg-white rounded-2xl border border-gray-100 relative group hover:border-sky-accent transition-all cursor-pointer overflow-hidden flex flex-col" onClick={() => handleEditResearch(res)}>
+                    {res.imageUrl && (
+                      <div className="h-32 overflow-hidden border-b border-gray-50">
+                        <img src={res.imageUrl} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" alt="" />
+                      </div>
+                    )}
+                    <div className="p-6 flex-1">
+                      <div className="text-[9px] font-black text-sky-accent uppercase tracking-widest mb-2">{res.tag || 'Project'}</div>
+                      <h3 className="font-bold text-base leading-tight mb-4 line-clamp-2">{res.title}</h3>
+                      <p className="text-[10px] text-[#64748B] line-clamp-2 leading-relaxed mb-6">{res.abstract}</p>
+                    </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); deleteItem('research', res.id); }}
                       className="absolute bottom-6 right-6 p-2 text-gray-200 hover:text-red-500 transition-colors"

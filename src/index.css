@@ -26,7 +26,15 @@
 }
 
 .editorial-card {
-  @apply border border-border-editorial p-6 rounded-lg transition-colors hover:border-sky-accent/50;
+  @apply border border-border-editorial rounded-none transition-all duration-500 hover:border-midnight hover:shadow-2xl hover:shadow-midnight/5;
+}
+
+.editorial-card-inner {
+  @apply p-8 flex flex-col h-full;
+}
+
+.editorial-image-container {
+  @apply relative aspect-[16/9] overflow-hidden bg-sky-light border-b border-border-editorial;
 }
 
 .editorial-sidebar {
